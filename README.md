@@ -13,9 +13,20 @@ login gate (one shared household login — not per-user data).
    ```bash
    npm install
    ```
-2. Copy `.env` and point `DATABASE_URL` at a Postgres database (a local one is
-   fine for development — see below for a quick way to spin one up).
-3. Set `SESSION_SECRET` (`openssl rand -base64 32`) and `SEED_USER_EMAIL` /
+2. Start a local Postgres with Docker Compose:
+   ```bash
+   docker compose up -d
+   ```
+   This runs Postgres 16 on `localhost:5432` with a `foodhelper`/`foodhelper_dev`
+   user/db (data persists in a Docker volume across restarts). No Docker?
+   Any local Postgres works — just point `DATABASE_URL` at it (same
+   connection-string shape as below).
+3. Copy the env template and fill in the blanks:
+   ```bash
+   cp .env.example .env
+   ```
+   `DATABASE_URL` already matches the Compose service. Generate a
+   `SESSION_SECRET` with `openssl rand -base64 32`, and set `SEED_USER_EMAIL` /
    `SEED_USER_PASSWORD` for the initial login.
 4. Apply the schema and seed sample data:
    ```bash
@@ -28,18 +39,6 @@ login gate (one shared household login — not per-user data).
    ```
    Sign in at [http://localhost:3000/login](http://localhost:3000/login) with
    the `SEED_USER_EMAIL` / `SEED_USER_PASSWORD` you set.
-
-### Quick local Postgres (optional)
-
-If you don't already have Postgres running locally:
-
-```bash
-sudo service postgresql start
-sudo -u postgres psql -c "CREATE USER foodhelper WITH PASSWORD 'foodhelper' CREATEDB;"
-sudo -u postgres psql -c "CREATE DATABASE foodhelper_dev OWNER foodhelper;"
-```
-
-Then set `DATABASE_URL="postgresql://foodhelper:foodhelper@localhost:5432/foodhelper_dev?schema=public"`.
 
 ## Tests
 
